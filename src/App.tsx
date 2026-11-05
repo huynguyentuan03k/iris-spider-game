@@ -9,9 +9,16 @@ import { GameCanvas } from './components/GameCanvas';
 import { GameHud } from './components/GameHud';
 import { MultiplayerModal } from './components/MultiplayerModal';
 import { PhaserFantasyLabModal } from './components/PhaserFantasyLabModal';
-import { TitleScreen } from './components/TitleScreen';
+import { PrivateLobbyView } from './components/PrivateLobbyView';
+import { CharacterCustomizerModal } from './components/CharacterCustomizerModal';
 import { WorldModals } from './components/WorldModals';
 import { MultiplayerClient } from './game/multiplayer/MultiplayerClient';
+import {
+  CharacterAppearance,
+  hasCompletedCharacterSetup,
+  loadCharacterProfile,
+  saveCharacterProfile,
+} from './game/characterArt';
 import {
   CloudSaveData,
   loadCloudWorldSave,
@@ -131,6 +138,9 @@ export default function App() {
     multiplayerClientRef.current = new MultiplayerClient();
   }
 
+  const [characterProfile, setCharacterProfile] = useState<CharacterAppearance>(() => loadCharacterProfile());
+  const [showCharacterCustomizer, setShowCharacterCustomizer] = useState<boolean>(() => !hasCompletedCharacterSetup());
+
   const [gameState, setGameState] = useState<GameState>(GameState.TITLE);
   const [hud, setHud] = useState<HudSnapshot>(INITIAL_HUD);
   const [dialogue, setDialogue] = useState<ActiveDialogue | null>(null);
@@ -235,11 +245,12 @@ export default function App() {
 
   const handleEngineReady = useCallback((engine: OpenWorldEngine) => {
     engineRef.current = engine;
+    engine.setPlayerAppearance(characterProfile);
     if (multiplayerClientRef.current) {
       engine.setMultiplayerClient(multiplayerClientRef.current);
     }
     setTitleMapData(engine.getWorldDataForMap());
-  }, []);
+  }, [characterProfile]);
 
   const handleHudUpdate = useCallback((snapshot: HudSnapshot) => {
     setHud(snapshot);
@@ -288,18 +299,24 @@ export default function App() {
     setIsMuted(nextMuted);
   }, []);
 
-  const autoConnectMultiplayer = useCallback(() => {
+  const autoConnectMultiplayer = useCallback((profile?: CharacterAppearance) => {
     const client = multiplayerClientRef.current;
+    const prof = profile || characterProfile;
     if (client && client.getStatus() === 'DISCONNECTED') {
       const name =
         currentUser?.displayName ||
         currentUser?.email?.split('@')[0] ||
-        localStorage.getItem('coop_player_name') ||
+        prof.name ||
         'Nhà Thám Hiểm';
-      const color = localStorage.getItem('coop_player_color') || '#38bdf8';
-      client.connect('global-sanctuary', name, color);
+      const color = prof.color || '#38bdf8';
+      client.connect(client.getCurrentRoom().id || 'global-sanctuary', name, color, {
+        skinColor: prof.skinColor,
+        hairStyle: prof.hairStyle,
+        hairColor: prof.hairColor,
+        outfitStyle: prof.outfitStyle,
+      });
     }
-  }, [currentUser]);
+  }, [currentUser, characterProfile]);
 
   const handleStartNew = useCallback(() => {
     const eng = engineRef.current;
@@ -308,8 +325,9 @@ export default function App() {
     sound.playObeliskActivate();
     autoConnectMultiplayer();
     eng.initNewWorld(hud.seed);
+    eng.setPlayerAppearance(characterProfile);
     eng.setGameState(GameState.PLAYING);
-  }, [hud.seed, autoConnectMultiplayer]);
+  }, [hud.seed, autoConnectMultiplayer, characterProfile]);
 
   const handleContinue = useCallback(() => {
     const eng = engineRef.current;
@@ -326,8 +344,9 @@ export default function App() {
       }
     }
     sound.playObeliskActivate();
+    eng.setPlayerAppearance(characterProfile);
     eng.setGameState(GameState.PLAYING);
-  }, [cloudSaveCache, hud.discoveredSpeciesIds.length, autoConnectMultiplayer]);
+  }, [cloudSaveCache, hud.discoveredSpeciesIds.length, autoConnectMultiplayer, characterProfile]);
 
   const handleStartAtLocation = useCallback(
     (worldX: number, worldY: number) => {
@@ -336,10 +355,11 @@ export default function App() {
       sound.unlock();
       autoConnectMultiplayer();
       eng.initNewWorld(hud.seed);
+      eng.setPlayerAppearance(characterProfile);
       setTitleMapData(eng.getWorldDataForMap());
       eng.fastTravelTo(worldX, worldY);
     },
-    [hud.seed, autoConnectMultiplayer]
+    [hud.seed, autoConnectMultiplayer, characterProfile]
   );
 
   const handleRerollSeed = useCallback(() => {
@@ -367,15 +387,23 @@ export default function App() {
       />
 
       {gameState === GameState.TITLE && (
-        <TitleScreen
+        <PrivateLobbyView
+          playerProfile={characterProfile}
           seed={hud.seed}
           canContinue={canContinue}
           isMuted={isMuted}
           userEmail={currentUser?.email || null}
           cloudSyncStatus={cloudSyncStatus}
           mapData={titleMapData}
-          onStartNew={handleStartNew}
-          onStartAtLocation={handleStartAtLocation}
+          multiplayerClient={multiplayerClientRef.current!}
+          onEditCharacter={() => setShowCharacterCustomizer(true)}
+          onEnterMap={(worldX, worldY) => {
+            if (worldX !== undefined && worldY !== undefined) {
+              handleStartAtLocation(worldX, worldY);
+            } else {
+              handleStartNew();
+            }
+          }}
           onContinue={handleContinue}
           onRerollSeed={handleRerollSeed}
           onToggleMute={handleToggleMute}
@@ -385,9 +413,34 @@ export default function App() {
         />
       )}
 
+      {showCharacterCustomizer && (
+        <CharacterCustomizerModal
+          initialProfile={characterProfile}
+          isInitialSetup={!hasCompletedCharacterSetup()}
+          onConfirm={(updated) => {
+            setCharacterProfile(updated);
+            setShowCharacterCustomizer(false);
+            if (engineRef.current) {
+              engineRef.current.setPlayerAppearance(updated);
+            }
+            if (multiplayerClientRef.current) {
+              multiplayerClientRef.current.updateProfile(updated.name, updated.color, {
+                skinColor: updated.skinColor,
+                hairStyle: updated.hairStyle,
+                hairColor: updated.hairColor,
+                outfitStyle: updated.outfitStyle,
+              });
+            }
+          }}
+          onCancel={hasCompletedCharacterSetup() ? () => setShowCharacterCustomizer(false) : undefined}
+        />
+      )}
+
       {gameState !== GameState.TITLE && (
         <GameHud
           hud={hud}
+          characterProfile={characterProfile}
+          onOpenCustomizer={() => setShowCharacterCustomizer(true)}
           isMuted={isMuted}
           getMapData={getMapData}
           onSelectSlot={(slot) => engineRef.current?.selectHotbarSlot(slot)}

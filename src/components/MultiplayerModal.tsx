@@ -32,6 +32,7 @@ import {
   WorldPing,
 } from '../game/multiplayer/types';
 import { sound } from '../game/audio';
+import { loadCharacterProfile, saveCharacterProfile } from '../game/characterArt';
 
 interface MultiplayerModalProps {
   client: MultiplayerClient;
@@ -80,8 +81,14 @@ export const MultiplayerModal: React.FC<MultiplayerModalProps> = ({
   const fetchRooms = async () => {
     setIsLoadingRooms(true);
     try {
-      const res = await fetch('/api/multiplayer/rooms');
-      if (res.ok) {
+      let res = await fetch('http://localhost:8001/api/v1/rooms').catch(() => null);
+      if (!res || !res.ok) {
+        res = await fetch('http://localhost:8001/api/multiplayer/rooms').catch(() => null);
+      }
+      if (!res || !res.ok) {
+        res = await fetch('/api/multiplayer/rooms').catch(() => null);
+      }
+      if (res && res.ok) {
         const data = await res.json();
         const list = Array.isArray(data) ? data : data.rooms || [];
         setRoomsList(list);
@@ -118,9 +125,16 @@ export const MultiplayerModal: React.FC<MultiplayerModalProps> = ({
 
   const handleJoinRoom = (roomId: string) => {
     sound.playObeliskActivate();
-    localStorage.setItem('coop_player_name', playerName);
-    localStorage.setItem('coop_player_color', selectedColor);
-    client.connect(roomId, playerName, selectedColor);
+    const prof = loadCharacterProfile();
+    prof.name = playerName;
+    prof.color = selectedColor;
+    saveCharacterProfile(prof);
+    client.connect(roomId, playerName, selectedColor, {
+      skinColor: prof.skinColor,
+      hairStyle: prof.hairStyle,
+      hairColor: prof.hairColor,
+      outfitStyle: prof.outfitStyle,
+    });
   };
 
   const handleSendChat = (e: React.FormEvent) => {

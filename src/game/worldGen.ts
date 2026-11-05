@@ -15,6 +15,7 @@ import {
   NpcEntity,
   PlacedStructure,
   ResearchBeacon,
+  ResourceId,
   ResourceKind,
   ResourceNode,
   StructureKind,

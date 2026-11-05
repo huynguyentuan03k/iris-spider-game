@@ -10,7 +10,6 @@ import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import { getGameForUser, getOrCreateUser, saveGameForUser } from './src/db/users.ts';
 import { AuthRequest, requireAuth } from './src/middleware/auth.ts';
-import { getMultiplayerServerInstance, setupMultiplayerServer } from './src/server/multiplayer.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,24 +18,36 @@ async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT) || 3000;
   const httpServer = http.createServer(app);
-
-  // Initialize Real-time Multiplayer WebSocket server
-  const mpServer = setupMultiplayerServer(httpServer);
+  const EXTERNAL_BACKEND = process.env.EXTERNAL_BACKEND_URL || 'http://localhost:8001';
 
   app.use(express.json({ limit: '10mb' }));
 
   // API Routes
   app.get('/api/health', (_req, res) => {
-    res.json({ status: 'ok', database: 'cloudsql_postgresql', multiplayer: 'active' });
+    res.json({ status: 'ok', database: 'cloudsql_postgresql', externalBackend: EXTERNAL_BACKEND });
   });
 
-  // Multiplayer Rooms API
-  app.get('/api/multiplayer/rooms', (_req, res) => {
-    res.json(mpServer.getPublicRooms());
+  // Multiplayer Rooms Proxy to external WebSocket server (port 8001)
+  app.get('/api/multiplayer/rooms', async (_req, res) => {
+    try {
+      const resp = await fetch(`${EXTERNAL_BACKEND}/api/v1/rooms`);
+      if (resp.ok) return res.json(await resp.json());
+      const altResp = await fetch(`${EXTERNAL_BACKEND}/api/multiplayer/rooms`);
+      if (altResp.ok) return res.json(await altResp.json());
+      res.json([]);
+    } catch {
+      res.json([]);
+    }
   });
 
-  app.get('/api/multiplayer/stats', (_req, res) => {
-    res.json(mpServer.getStats());
+  app.get('/api/multiplayer/stats', async (_req, res) => {
+    try {
+      const resp = await fetch(`${EXTERNAL_BACKEND}/api/v1/stats`);
+      if (resp.ok) return res.json(await resp.json());
+      res.json({ totalOnlinePlayers: 0, activeRoomsCount: 0, rooms: [] });
+    } catch {
+      res.json({ totalOnlinePlayers: 0, activeRoomsCount: 0, rooms: [] });
+    }
   });
 
   app.get('/api/users/me', requireAuth, async (req: AuthRequest, res) => {

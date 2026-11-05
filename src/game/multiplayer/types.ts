@@ -8,6 +8,10 @@ export interface RemotePlayer {
   uid?: string;
   name: string;
   color: string;
+  skinColor?: string;
+  hairStyle?: string;
+  hairColor?: string;
+  outfitStyle?: string;
   x: number;
   y: number;
   vx: number;

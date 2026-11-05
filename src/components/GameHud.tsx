@@ -3,10 +3,13 @@ import { BUILDABLE_SLOTS, RESOURCE_META, SWORD_NAMES, countAffordableUpgrades } 
 import { countAffordableSkills } from '../game/skillTree';
 import { PET_MODE_LABELS } from '../game/engine';
 import { HudSnapshot, ResourceId, WorldMapRenderData } from '../game/types';
+import { CharacterAppearance } from '../game/characterArt';
 import { EarthMapCanvas } from './EarthMapCanvas';
 
 interface GameHudProps {
   hud: HudSnapshot;
+  characterProfile?: CharacterAppearance;
+  onOpenCustomizer?: () => void;
   isMuted: boolean;
   getMapData: () => WorldMapRenderData | null;
   onSelectSlot: (slot: number) => void;
@@ -28,6 +31,8 @@ interface GameHudProps {
 
 export const GameHud: React.FC<GameHudProps> = ({
   hud,
+  characterProfile,
+  onOpenCustomizer,
   isMuted,
   getMapData,
   onSelectSlot,
@@ -66,6 +71,29 @@ export const GameHud: React.FC<GameHudProps> = ({
       <div className="flex items-start justify-between gap-4">
         {/* Top-Left: Vitals + Sky Cycle Dial + Current Location & Wildlife Rhythm */}
         <div className="bg-[#101815]/92 border border-[#2a3b34] rounded-lg px-3.5 py-2.5 shadow-md max-w-md">
+          {characterProfile && (
+            <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-[#23322c]">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span
+                  className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm"
+                  style={{ backgroundColor: characterProfile.color }}
+                />
+                <span className="text-xs font-bold text-[#f7f4eb] truncate">
+                  {characterProfile.name}
+                </span>
+              </div>
+              {onOpenCustomizer && (
+                <button
+                  type="button"
+                  onClick={onOpenCustomizer}
+                  className="text-[10px] text-[#e8c468] hover:underline cursor-pointer"
+                  title="Chỉnh sửa ngoại hình nhân vật"
+                >
+                  Ngoại hình
+                </button>
+              )}
+            </div>
+          )}
           <div className="flex items-center gap-2.5">
             <svg className="w-4 h-4 text-[#f87171] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />

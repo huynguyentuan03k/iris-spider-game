@@ -86,6 +86,12 @@ import {
   WeatherGameplayPerks,
   computeWeatherGameplayPerks,
 } from './weatherEffects';
+import {
+  CharacterAppearance,
+  DEFAULT_CHARACTER,
+  drawCharacterSprite,
+  loadCharacterProfile,
+} from './characterArt';
 
 const CHUNK_TILES = 20;
 const CHUNK_PX = CHUNK_TILES * TILE_SIZE;
@@ -638,8 +644,12 @@ export class OpenWorldEngine {
         swordTier: 1,
         toolTier: 1,
         armorTier: 0,
+        spearTier: 0,
+        shieldTier: 0,
+        upgrades: {},
       },
       selectedSlot: 0,
+      appearance: loadCharacterProfile(),
     };
 
     this.inventory = {
@@ -989,6 +999,16 @@ export class OpenWorldEngine {
     }
     this.callbacks.onStateChange(next);
     this.emitHudSnapshot();
+  }
+
+  public setPlayerAppearance(appearance: CharacterAppearance): void {
+    if (this.player) {
+      this.player.appearance = appearance;
+    }
+  }
+
+  public getPlayerAppearance(): CharacterAppearance {
+    return this.player?.appearance || loadCharacterProfile();
   }
 
   public setMultiplayerClient(client: MultiplayerClient | null): void {
@@ -7618,78 +7638,28 @@ export class OpenWorldEngine {
 
   private drawPlayer(ctx: CanvasRenderingContext2D): void {
     const p = this.player;
-    const sh = this.getShadowTransform();
-    ctx.save();
-    ctx.translate(p.x, p.y);
+    const isSwinging = p.swingTimer > 0;
+    const speed = Math.hypot(p.vx, p.vy);
+    const facing = p.facingX < 0 ? 'left' : 'right';
+    const appearance = p.appearance || loadCharacterProfile();
 
-    ctx.fillStyle = `rgba(0, 0, 0, ${(sh.alpha + 0.06).toFixed(3)})`;
-    ctx.beginPath();
-    ctx.ellipse(sh.offX * 0.7, 10 + sh.offY * 0.3, 13 * sh.stretchX, 6, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    if (p.swingTimer > 0) {
-      const progress = 1 - p.swingTimer / p.swingDuration;
-      const tierColors = ['#e2e8f0', '#e2e8f0', '#93c5fd', '#38bdf8', '#c084fc', '#a3e635'];
-      const bladeColor = tierColors[p.equipment.swordTier] || '#e2e8f0';
-      const reach = 52 + p.equipment.swordTier * 5;
-      const dir = p.swingCombo % 2 === 0 ? 1 : -1;
-      const startAng = p.swingAngle - dir * 1.15;
-      const curAng = startAng + dir * progress * 2.3;
-
-      ctx.save();
-      ctx.strokeStyle = bladeColor;
-      ctx.lineWidth = 8 * (1 - progress * 0.45);
-      ctx.globalAlpha = 0.82 * (1 - progress * 0.35);
-      ctx.beginPath();
-      if (dir > 0) {
-        ctx.arc(0, -4, reach * 0.82, startAng, curAng, false);
-      } else {
-        ctx.arc(0, -4, reach * 0.82, curAng, startAng, false);
-      }
-      ctx.stroke();
-
-      ctx.rotate(curAng);
-      ctx.fillStyle = bladeColor;
-      ctx.fillRect(12, -3, reach - 10, 6);
-      ctx.restore();
-    }
-
-    const bob = Math.abs(Math.sin(p.walkCycle)) * (Math.hypot(p.vx, p.vy) > 15 ? 2.5 : 0);
-    ctx.scale(1 + p.squash, 1 - p.squash * 0.8);
-
-    const flash = p.hitFlash > 0.2;
-    const armorPalette = ['#0f766e', '#78552b', '#475569', '#0284c7', '#059669'];
-    const coatColor = armorPalette[p.equipment.armorTier] || '#0f766e';
-
-    ctx.fillStyle = flash ? '#ffffff' : coatColor;
-    ctx.beginPath();
-    ctx.arc(0, -3 - bob, 12.5, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = p.microscopeActive
-      ? '#a3e635'
-      : p.equipment.armorTier >= 3
-      ? '#7dd3fc'
-      : p.equipment.armorTier >= 1
-      ? '#fbbf24'
-      : '#99f6e4';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    ctx.fillStyle = flash ? '#ffffff' : '#fde68a';
-    ctx.beginPath();
-    ctx.arc(0, -14 - bob, 8.5, 0, Math.PI * 2);
-    ctx.fill();
-
-    const ex = Math.cos(p.aimAngle) * 3.2;
-    const ey = Math.sin(p.aimAngle) * 2.2;
-    ctx.fillStyle = '#0f172a';
-    ctx.beginPath();
-    ctx.arc(ex - 2.2, -14 - bob + ey, 1.4, 0, Math.PI * 2);
-    ctx.arc(ex + 2.2, -14 - bob + ey, 1.4, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.restore();
+    drawCharacterSprite(ctx, {
+      x: p.x,
+      y: p.y,
+      scale: 1,
+      facing,
+      appearance,
+      anim: isSwinging ? 'attack' : speed > 15 ? 'walk' : 'idle',
+      animTime: p.walkCycle || this.globalTime,
+      showNametag: false,
+      isLocalPlayer: true,
+      weaponTier: p.equipment.swordTier,
+      armorTier: p.equipment.armorTier,
+      swingAngle: p.swingAngle,
+      isSwinging,
+      hitFlash: p.hitFlash > 0.2,
+      shadow: true,
+    });
   }
 
   private updateMultiplayerSync(dt: number): void {
@@ -7717,68 +7687,35 @@ export class OpenWorldEngine {
   }
 
   private drawRemotePlayer(ctx: CanvasRenderingContext2D, rp: RemotePlayer): void {
-    const sh = this.getShadowTransform();
-    ctx.save();
-    ctx.translate(rp.x, rp.y);
-
-    // 1. Dynamic shadow
-    ctx.fillStyle = `rgba(0, 0, 0, ${(sh.alpha + 0.06).toFixed(3)})`;
-    ctx.beginPath();
-    ctx.ellipse(sh.offX * 0.7, 10 + sh.offY * 0.3, 13 * sh.stretchX, 6, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 2. Weapon attack swing if attacking
     const isAttacking = rp.swinging || rp.anim === 'attack' || rp.isAttacking;
-    if (isAttacking) {
-      const bladeColor = rp.color || '#38bdf8';
-      const reach = 52 + (rp.armorTier || 0) * 4;
-      const curAng = rp.swingAngle || (rp.facing === 'left' ? Math.PI : 0);
-
-      ctx.save();
-      ctx.strokeStyle = bladeColor;
-      ctx.lineWidth = 6;
-      ctx.globalAlpha = 0.8;
-      ctx.beginPath();
-      ctx.arc(0, -4, reach * 0.82, curAng - 0.9, curAng + 0.9, false);
-      ctx.stroke();
-
-      ctx.rotate(curAng);
-      ctx.fillStyle = bladeColor;
-      ctx.fillRect(10, -2.5, reach - 8, 5);
-      ctx.restore();
-    }
-
-    // 3. Movement bobbing
     const speed = Math.hypot(rp.vx || 0, rp.vy || 0);
-    const bob = Math.abs(Math.sin(this.globalTime * 8)) * (speed > 15 ? 2.5 : 0);
 
-    // 4. Remote Player Body (colored with custom player color / coat)
-    const baseColor = rp.color || '#0f766e';
-    ctx.fillStyle = baseColor;
-    ctx.beginPath();
-    ctx.arc(0, -3 - bob, 12.5, 0, Math.PI * 2);
-    ctx.fill();
+    const remoteApp: CharacterAppearance = {
+      name: rp.name || 'Đồng Đội',
+      color: rp.color || '#38bdf8',
+      skinColor: rp.skinColor || '#fde68a',
+      hairStyle: (rp.hairStyle as any) || 'cap',
+      hairColor: rp.hairColor || '#475569',
+      outfitStyle: (rp.outfitStyle as any) || 'explorer',
+    };
 
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.8;
-    ctx.stroke();
+    drawCharacterSprite(ctx, {
+      x: rp.x,
+      y: rp.y,
+      scale: 1,
+      facing: rp.facing || 'right',
+      appearance: remoteApp,
+      anim: isAttacking ? 'attack' : speed > 15 ? 'walk' : 'idle',
+      animTime: this.globalTime * 8,
+      showNametag: false,
+      weaponTier: rp.swordTier || 1,
+      armorTier: rp.armorTier || 0,
+      swingAngle: rp.swingAngle || 0,
+      isSwinging: Boolean(isAttacking),
+      shadow: true,
+    });
 
-    // 5. Head
-    ctx.fillStyle = '#fde68a';
-    ctx.beginPath();
-    ctx.arc(0, -14 - bob, 8.5, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Eyes direction
-    const eyeDir = rp.facing === 'left' ? -1 : 1;
-    ctx.fillStyle = '#0f172a';
-    ctx.beginPath();
-    ctx.arc(eyeDir * 2.5, -14 - bob, 1.4, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.restore();
-
-    // 6. Nametag & Health Bar & Speech Bubble in World Coordinates (above player)
+    // Overhead Nametag & Health Bar & Speech Bubble in World Coordinates (above player)
     ctx.save();
     const tagY = rp.y - 32;
 

@@ -27,6 +27,13 @@ export class MultiplayerClient {
   private currentRoomName: string = 'Đại Lãnh Địa Thánh (Public Realm)';
   private playerName: string = 'Nhà Thám Hiểm';
   private playerColor: string = '#38bdf8';
+  private skinColor: string = '#fde68a';
+  private hairStyle: string = 'cap';
+  private hairColor: string = '#475569';
+  private outfitStyle: string = 'explorer';
+  private currentCustomRoomName?: string;
+  private currentIsPrivate?: boolean;
+  private currentSeed?: number;
   private remotePlayers: Map<string, RemotePlayer> = new Map();
   private pings: Map<string, WorldPing> = new Map();
   private messages: ChatMessage[] = [];
@@ -73,11 +80,41 @@ export class MultiplayerClient {
     return this.messages.slice(-30);
   }
 
-  public connect(roomId: string = 'global-sanctuary', name: string = 'Nhà Thám Hiểm', color: string = '#38bdf8') {
+  public async checkBackendHealth(): Promise<{ healthy: boolean; status?: any; error?: string }> {
+    try {
+      const healthUrl = (import.meta as any).env?.VITE_HEALTH_URL || 'http://localhost:8001/api/v1/health';
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const res = await fetch(healthUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        const json = await res.json().catch(() => ({ status: 'ok' }));
+        return { healthy: true, status: json };
+      }
+      return { healthy: false, error: `HTTP ${res.status}` };
+    } catch (e: any) {
+      return { healthy: false, error: e?.message || 'Connection refused' };
+    }
+  }
+
+  public connect(
+    roomId: string = 'global-sanctuary',
+    name: string = 'Nhà Thám Hiểm',
+    color: string = '#38bdf8',
+    appearance?: { skinColor?: string; hairStyle?: string; hairColor?: string; outfitStyle?: string },
+    roomOptions?: { customRoomName?: string; isPrivate?: boolean; seed?: number }
+  ) {
     this.shouldReconnect = true;
     this.currentRoomId = roomId;
     this.playerName = name;
     this.playerColor = color;
+    if (appearance?.skinColor) this.skinColor = appearance.skinColor;
+    if (appearance?.hairStyle) this.hairStyle = appearance.hairStyle;
+    if (appearance?.hairColor) this.hairColor = appearance.hairColor;
+    if (appearance?.outfitStyle) this.outfitStyle = appearance.outfitStyle;
+    if (roomOptions?.customRoomName) this.currentCustomRoomName = roomOptions.customRoomName;
+    if (roomOptions?.isPrivate !== undefined) this.currentIsPrivate = roomOptions.isPrivate;
+    if (roomOptions?.seed !== undefined) this.currentSeed = roomOptions.seed;
 
     if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
       this.ws.close();
@@ -85,8 +122,15 @@ export class MultiplayerClient {
 
     this.setStatus('CONNECTING');
 
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws/multiplayer`;
+    // Connect to external WebSocket server running at localhost:8001
+    const wsUrl = (import.meta as any).env?.VITE_WS_URL || 'ws://localhost:8001/ws/multiplayer';
+
+    // Verify health of http://localhost:8001/api/v1/health
+    this.checkBackendHealth().then((health) => {
+      if (!health.healthy) {
+        console.warn('[MultiplayerClient] Backend health check failed at http://localhost:8001/api/v1/health:', health.error);
+      }
+    });
 
     try {
       this.ws = new WebSocket(wsUrl);
@@ -101,6 +145,13 @@ export class MultiplayerClient {
           roomId: this.currentRoomId,
           name: this.playerName,
           color: this.playerColor,
+          skinColor: this.skinColor,
+          hairStyle: this.hairStyle,
+          hairColor: this.hairColor,
+          outfitStyle: this.outfitStyle,
+          customRoomName: this.currentCustomRoomName,
+          isPrivate: this.currentIsPrivate,
+          seed: this.currentSeed,
         });
       };
 
@@ -192,6 +243,12 @@ export class MultiplayerClient {
               existing.petName = p.petName;
               existing.chatMessage = p.chatMessage;
               existing.lastSeen = p.lastSeen;
+              existing.color = p.color || existing.color;
+              existing.name = p.name || existing.name;
+              existing.skinColor = p.skinColor || existing.skinColor;
+              existing.hairStyle = p.hairStyle || existing.hairStyle;
+              existing.hairColor = p.hairColor || existing.hairColor;
+              existing.outfitStyle = p.outfitStyle || existing.outfitStyle;
             } else {
               this.remotePlayers.set(p.id, p);
             }
@@ -307,31 +364,67 @@ export class MultiplayerClient {
     });
   }
 
-  public joinRoom(roomId: string, customRoomName?: string, isPrivate: boolean = false) {
+  public joinRoom(
+    roomId: string,
+    customRoomName?: string,
+    isPrivate: boolean = false,
+    seed?: number,
+    appearance?: { skinColor?: string; hairStyle?: string; hairColor?: string; outfitStyle?: string }
+  ) {
     this.currentRoomId = roomId;
+    if (appearance?.skinColor) this.skinColor = appearance.skinColor;
+    if (appearance?.hairStyle) this.hairStyle = appearance.hairStyle;
+    if (appearance?.hairColor) this.hairColor = appearance.hairColor;
+    if (appearance?.outfitStyle) this.outfitStyle = appearance.outfitStyle;
+    if (seed !== undefined) this.currentSeed = seed;
+    if (customRoomName) this.currentCustomRoomName = customRoomName;
+    this.currentIsPrivate = isPrivate;
+
     if (this.status === 'CONNECTED' && this.ws) {
       this.send({
         type: 'join',
         roomId,
         customRoomName,
         isPrivate,
+        seed,
         name: this.playerName,
         color: this.playerColor,
+        skinColor: this.skinColor,
+        hairStyle: this.hairStyle,
+        hairColor: this.hairColor,
+        outfitStyle: this.outfitStyle,
       });
     } else {
-      this.connect(roomId, this.playerName, this.playerColor);
+      this.connect(roomId, this.playerName, this.playerColor, appearance, {
+        customRoomName,
+        isPrivate,
+        seed,
+      });
     }
   }
 
-  public updateProfile(name: string, color: string) {
+  public updateProfile(
+    name: string,
+    color: string,
+    appearance?: { skinColor?: string; hairStyle?: string; hairColor?: string; outfitStyle?: string }
+  ) {
     this.playerName = name;
     this.playerColor = color;
+    if (appearance?.skinColor) this.skinColor = appearance.skinColor;
+    if (appearance?.hairStyle) this.hairStyle = appearance.hairStyle;
+    if (appearance?.hairColor) this.hairColor = appearance.hairColor;
+    if (appearance?.outfitStyle) this.outfitStyle = appearance.outfitStyle;
+
     if (this.status === 'CONNECTED' && this.ws) {
       this.send({
         type: 'join',
         roomId: this.currentRoomId,
         name,
         color,
+        skinColor: this.skinColor,
+        hairStyle: this.hairStyle,
+        hairColor: this.hairColor,
+        outfitStyle: this.outfitStyle,
       });
     }
   }

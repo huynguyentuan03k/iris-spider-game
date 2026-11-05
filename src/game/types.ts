@@ -1,7 +1,8 @@
 import { BiomeRegion } from './biodiversity';
 import { JournalCategory, JournalEntry } from './journal';
+import type { CharacterAppearance } from './characterArt';
 
-export type { JournalCategory, JournalEntry };
+export type { JournalCategory, JournalEntry, CharacterAppearance };
 
 export enum GameState {
   TITLE = 'TITLE',
@@ -353,6 +354,7 @@ export interface Player {
   walkCycle: number;
   equipment: PlayerEquipment;
   selectedSlot: number; // 0: Vũ khí/Khai thác, 1: Kính Hiển Vi Quét Sinh Học, 2: Ăn Quả, 3: Dược Thảo, 4: Lửa Trại, 5: Đèn Sinh Học Vibrio
+  appearance?: CharacterAppearance;
 }
 
 export interface HudSnapshot {

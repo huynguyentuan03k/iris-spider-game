@@ -739,7 +739,7 @@ export const WorldModals: React.FC<WorldModalsProps> = ({
               onClick={onReturnTitle}
               className="h-10 px-5 rounded-lg bg-transparent hover:bg-[#1a2622] text-[#94a3b8] hover:text-[#f2efe9] font-medium text-xs transition-colors whitespace-nowrap shrink-0 cursor-pointer"
             >
-              Về Màn Hình Chính
+              Lưu & Về Sảnh Chờ (Lobby)
             </button>
           </div>
         </div>
