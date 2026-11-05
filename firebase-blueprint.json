@@ -1,0 +1,174 @@
+{
+  "entities": {
+    "WorldSave": {
+      "title": "WorldSave",
+      "description": "Persistent open-world save state, tamed companion state, and discovered ecosystem codex for an authenticated player.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the save owner.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "seed": {
+          "type": "number",
+          "description": "Deterministic world generation seed."
+        },
+        "playerX": {
+          "type": "number",
+          "description": "Player X world coordinate."
+        },
+        "playerY": {
+          "type": "number",
+          "description": "Player Y world coordinate."
+        },
+        "hp": {
+          "type": "number",
+          "description": "Current player health points."
+        },
+        "maxHp": {
+          "type": "number",
+          "description": "Maximum player health points."
+        },
+        "dayCount": {
+          "type": "number",
+          "description": "Elapsed in-game days."
+        },
+        "timeOfDay": {
+          "type": "number",
+          "description": "Normalized time of day between 0 and 1."
+        },
+        "swordTier": {
+          "type": "number",
+          "description": "Equipped weapon tier (1 to 5)."
+        },
+        "toolTier": {
+          "type": "number",
+          "description": "Equipped harvesting tool tier (1 to 4)."
+        },
+        "armorTier": {
+          "type": "number",
+          "description": "Equipped armor tier (0 to 4)."
+        },
+        "wood": {
+          "type": "number",
+          "description": "Collected wood count."
+        },
+        "stone": {
+          "type": "number",
+          "description": "Collected stone count."
+        },
+        "iron": {
+          "type": "number",
+          "description": "Collected iron ore count."
+        },
+        "crystal": {
+          "type": "number",
+          "description": "Collected crystal count."
+        },
+        "berry": {
+          "type": "number",
+          "description": "Collected fruit and berry count."
+        },
+        "bioSample": {
+          "type": "number",
+          "description": "Collected microbial and insect research samples."
+        },
+        "potion": {
+          "type": "number",
+          "description": "Crafted herbal/antibiotic medicine count."
+        },
+        "exploredPercent": {
+          "type": "number",
+          "description": "Percentage of world fog-of-war revealed."
+        },
+        "petKind": {
+          "type": "string",
+          "description": "Tamed animal species enum key (empty string if no companion).",
+          "minLength": 0,
+          "maxLength": 32,
+          "pattern": "^[A-Z_]*$"
+        },
+        "petName": {
+          "type": "string",
+          "description": "Custom player-assigned companion name (empty string if no companion).",
+          "minLength": 0,
+          "maxLength": 32
+        },
+        "petLoyalty": {
+          "type": "number",
+          "description": "Tamed companion loyalty meter from 0 to 100."
+        },
+        "petMode": {
+          "type": "string",
+          "description": "Active companion AI behavior mode.",
+          "enum": ["BALANCED", "COMBAT", "GATHER", "FOLLOW"],
+          "minLength": 4,
+          "maxLength": 16
+        },
+        "discoveredSpecies": {
+          "type": "array",
+          "description": "Bounded array of discovered flora, fauna, insect, and bacteria IDs (max 80)."
+        },
+        "discoveredLocations": {
+          "type": "array",
+          "description": "Bounded array of visited named world locations (max 24)."
+        },
+        "unlockedSkills": {
+          "type": "array",
+          "description": "Bounded array of unlocked passive character skill IDs (max 24)."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the cloud save was first created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the cloud save was last synced."
+        }
+      },
+      "required": [
+        "ownerId",
+        "seed",
+        "playerX",
+        "playerY",
+        "hp",
+        "maxHp",
+        "dayCount",
+        "timeOfDay",
+        "swordTier",
+        "toolTier",
+        "armorTier",
+        "wood",
+        "stone",
+        "iron",
+        "crystal",
+        "berry",
+        "bioSample",
+        "potion",
+        "exploredPercent",
+        "petKind",
+        "petName",
+        "petLoyalty",
+        "petMode",
+        "discoveredSpecies",
+        "discoveredLocations",
+        "unlockedSkills",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/worldSaves/{userId}": {
+      "schema": {
+        "$ref": "#/entities/WorldSave"
+      },
+      "description": "Stores each authenticated user's single open-world progression, tamed companion state, and biodiversity codex document."
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Chân Trời Cổ Đại — Thế Giới Mở 2D",
+  "description": "Game phiêu lưu sinh tồn và hành động thế giới mở 2D: tự do khám phá 5 quần xã sinh vật, khai thác tài nguyên, chế tạo vũ khí, dựng trại và giải mã các cột đá cổ ngữ.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

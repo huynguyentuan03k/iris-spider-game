@@ -1,0 +1,142 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net: Default-Deny Catch-All
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Global Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isBoundedNumber(val, minVal, maxVal) {
+      return val is number && val >= minVal && val <= maxVal;
+    }
+
+    function isValidStringArray(arr, maxItems) {
+      return arr is list
+        && arr.size() <= maxItems
+        && (arr.size() == 0 || (arr[0] is string && arr[0].size() >= 1 && arr[0].size() <= 64));
+    }
+
+    function isValidPetMode(mode) {
+      return mode is string
+        && mode.size() >= 4
+        && mode.size() <= 16
+        && mode in ['BALANCED', 'COMBAT', 'GATHER', 'FOLLOW'];
+    }
+
+    // Validation Blueprint synchronized verbatim with firebase-blueprint.json
+    function isValidWorldSave(data) {
+      return data.keys().hasAll([
+          'ownerId', 'seed', 'playerX', 'playerY', 'hp', 'maxHp',
+          'dayCount', 'timeOfDay', 'swordTier', 'toolTier', 'armorTier',
+          'wood', 'stone', 'iron', 'crystal', 'berry', 'bioSample', 'potion',
+          'exploredPercent', 'petKind', 'petName', 'petLoyalty', 'petMode',
+          'discoveredSpecies', 'discoveredLocations', 'unlockedSkills',
+          'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId', 'seed', 'playerX', 'playerY', 'hp', 'maxHp',
+          'dayCount', 'timeOfDay', 'swordTier', 'toolTier', 'armorTier',
+          'wood', 'stone', 'iron', 'crystal', 'berry', 'bioSample', 'potion',
+          'exploredPercent', 'petKind', 'petName', 'petLoyalty', 'petMode',
+          'discoveredSpecies', 'discoveredLocations', 'unlockedSkills',
+          'createdAt', 'updatedAt'
+        ])
+        && data.ownerId is string
+        && data.ownerId.size() >= 1
+        && data.ownerId.size() <= 128
+        && data.ownerId.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.ownerId == request.auth.uid
+        && isBoundedNumber(data.seed, 1, 999999999)
+        && isBoundedNumber(data.playerX, 0, 50000)
+        && isBoundedNumber(data.playerY, 0, 50000)
+        && isBoundedNumber(data.hp, 0, 2000)
+        && isBoundedNumber(data.maxHp, 50, 2000)
+        && isBoundedNumber(data.dayCount, 1, 100000)
+        && isBoundedNumber(data.timeOfDay, 0, 1)
+        && isBoundedNumber(data.swordTier, 1, 10)
+        && isBoundedNumber(data.toolTier, 1, 10)
+        && isBoundedNumber(data.armorTier, 0, 10)
+        && isBoundedNumber(data.wood, 0, 999999)
+        && isBoundedNumber(data.stone, 0, 999999)
+        && isBoundedNumber(data.iron, 0, 999999)
+        && isBoundedNumber(data.crystal, 0, 999999)
+        && isBoundedNumber(data.berry, 0, 999999)
+        && isBoundedNumber(data.bioSample, 0, 999999)
+        && isBoundedNumber(data.potion, 0, 999999)
+        && isBoundedNumber(data.exploredPercent, 0, 100)
+        && data.petKind is string
+        && data.petKind.size() <= 32
+        && data.petKind.matches('^[A-Z_]*$')
+        && data.petName is string
+        && data.petName.size() <= 32
+        && isBoundedNumber(data.petLoyalty, 0, 100)
+        && isValidPetMode(data.petMode)
+        && isValidStringArray(data.discoveredSpecies, 80)
+        && isValidStringArray(data.discoveredLocations, 24)
+        && isValidStringArray(data.unlockedSkills, 24)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    match /worldSaves/{userId} {
+      allow get: if isVerifiedUser()
+        && isValidId(userId)
+        && userId == request.auth.uid;
+
+      allow list: if false;
+
+      allow create: if isVerifiedUser()
+        && isValidId(userId)
+        && userId == request.auth.uid
+        && isValidWorldSave(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser()
+        && isValidWorldSave(incoming())
+        && isValidId(userId)
+        && userId == request.auth.uid
+        && existing().ownerId == request.auth.uid
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Action: SyncProgressCompanionAndSkills
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'seed', 'playerX', 'playerY', 'hp', 'maxHp',
+            'dayCount', 'timeOfDay', 'swordTier', 'toolTier', 'armorTier',
+            'wood', 'stone', 'iron', 'crystal', 'berry', 'bioSample', 'potion',
+            'exploredPercent', 'petKind', 'petName', 'petLoyalty', 'petMode',
+            'discoveredSpecies', 'discoveredLocations', 'unlockedSkills', 'updatedAt'
+          ])
+        );
+
+      allow delete: if isVerifiedUser()
+        && isValidId(userId)
+        && userId == request.auth.uid
+        && existing().ownerId == request.auth.uid;
+    }
+  }
+}

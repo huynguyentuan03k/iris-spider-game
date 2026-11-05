@@ -1,0 +1,452 @@
+[
+  {
+    "id": "hero_idle_0",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_idle_0.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_idle_0.png",
+    "sizeBytes": 8010,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_walk_0",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_walk_0.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_walk_0.png",
+    "sizeBytes": 8327,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_walk_1",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_walk_1.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_walk_1.png",
+    "sizeBytes": 7677,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_walk_2",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_walk_2.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_walk_2.png",
+    "sizeBytes": 7185,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_walk_3",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_walk_3.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_walk_3.png",
+    "sizeBytes": 7734,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_run_0",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_run_0.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_run_0.png",
+    "sizeBytes": 7408,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_run_1",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_run_1.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_run_1.png",
+    "sizeBytes": 8024,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_run_2",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_run_2.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_run_2.png",
+    "sizeBytes": 8259,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_attack_0",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_attack_0.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_attack_0.png",
+    "sizeBytes": 8173,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_attack_1",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_attack_1.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_attack_1.png",
+    "sizeBytes": 7853,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_attack_2",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_attack_2.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_attack_2.png",
+    "sizeBytes": 8189,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_hurt_0",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_hurt_0.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_hurt_0.png",
+    "sizeBytes": 6919,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_death_0",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_death_0.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_death_0.png",
+    "sizeBytes": 7656,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_interact_0",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_interact_0.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_interact_0.png",
+    "sizeBytes": 7758,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "hero_cheer_0",
+    "category": "character",
+    "path": "public/assets/fantasy/characters/hero/hero_cheer_0.png",
+    "fullPath": "public/assets/fantasy/characters/hero/hero_cheer_0.png",
+    "sizeBytes": 7030,
+    "width": 192,
+    "height": 256
+  },
+  {
+    "id": "unit_paladin",
+    "category": "unit",
+    "path": "public/assets/fantasy/characters/units/paladin_champion.png",
+    "fullPath": "public/assets/fantasy/characters/units/paladin_champion.png",
+    "sizeBytes": 451,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "unit_knight",
+    "category": "unit",
+    "path": "public/assets/fantasy/characters/units/royal_knight.png",
+    "fullPath": "public/assets/fantasy/characters/units/royal_knight.png",
+    "sizeBytes": 558,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "unit_ranger",
+    "category": "unit",
+    "path": "public/assets/fantasy/characters/units/forest_ranger.png",
+    "fullPath": "public/assets/fantasy/characters/units/forest_ranger.png",
+    "sizeBytes": 595,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "unit_cavalry",
+    "category": "unit",
+    "path": "public/assets/fantasy/characters/units/heavy_cavalry.png",
+    "fullPath": "public/assets/fantasy/characters/units/heavy_cavalry.png",
+    "sizeBytes": 641,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "tree_ancient_oak",
+    "category": "tree",
+    "path": "public/assets/fantasy/vegetation/trees/ancient_oak_full.png",
+    "fullPath": "public/assets/fantasy/vegetation/trees/ancient_oak_full.png",
+    "sizeBytes": 1504,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "tree_pine_tall",
+    "category": "tree",
+    "path": "public/assets/fantasy/vegetation/trees/fantasy_pine_tall.png",
+    "fullPath": "public/assets/fantasy/vegetation/trees/fantasy_pine_tall.png",
+    "sizeBytes": 1242,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "tree_pine_med",
+    "category": "tree",
+    "path": "public/assets/fantasy/vegetation/trees/fantasy_pine_medium.png",
+    "fullPath": "public/assets/fantasy/vegetation/trees/fantasy_pine_medium.png",
+    "sizeBytes": 1632,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "tree_oak_small",
+    "category": "tree",
+    "path": "public/assets/fantasy/vegetation/trees/forest_oak_small.png",
+    "fullPath": "public/assets/fantasy/vegetation/trees/forest_oak_small.png",
+    "sizeBytes": 680,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "bush_large",
+    "category": "foliage",
+    "path": "public/assets/fantasy/vegetation/foliage/forest_bush_large.png",
+    "fullPath": "public/assets/fantasy/vegetation/foliage/forest_bush_large.png",
+    "sizeBytes": 782,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "bush_small",
+    "category": "foliage",
+    "path": "public/assets/fantasy/vegetation/foliage/forest_bush_small.png",
+    "fullPath": "public/assets/fantasy/vegetation/foliage/forest_bush_small.png",
+    "sizeBytes": 660,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "rock_boulder_large",
+    "category": "decor",
+    "path": "public/assets/fantasy/vegetation/decor/mossy_boulder_large.png",
+    "fullPath": "public/assets/fantasy/vegetation/decor/mossy_boulder_large.png",
+    "sizeBytes": 939,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "rock_boulder_small",
+    "category": "decor",
+    "path": "public/assets/fantasy/vegetation/decor/mossy_boulder_small.png",
+    "fullPath": "public/assets/fantasy/vegetation/decor/mossy_boulder_small.png",
+    "sizeBytes": 1121,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "tree_stump",
+    "category": "decor",
+    "path": "public/assets/fantasy/vegetation/decor/ancient_tree_stump.png",
+    "fullPath": "public/assets/fantasy/vegetation/decor/ancient_tree_stump.png",
+    "sizeBytes": 1287,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "fallen_log",
+    "category": "decor",
+    "path": "public/assets/fantasy/vegetation/decor/fallen_moss_log.png",
+    "fullPath": "public/assets/fantasy/vegetation/decor/fallen_moss_log.png",
+    "sizeBytes": 1511,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "flowers_red",
+    "category": "decor",
+    "path": "public/assets/fantasy/vegetation/decor/wildflower_patch_red.png",
+    "fullPath": "public/assets/fantasy/vegetation/decor/wildflower_patch_red.png",
+    "sizeBytes": 1512,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "flowers_blue",
+    "category": "decor",
+    "path": "public/assets/fantasy/vegetation/decor/wildflower_patch_blue.png",
+    "fullPath": "public/assets/fantasy/vegetation/decor/wildflower_patch_blue.png",
+    "sizeBytes": 825,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "mushrooms_cluster",
+    "category": "decor",
+    "path": "public/assets/fantasy/vegetation/decor/forest_mushrooms.png",
+    "fullPath": "public/assets/fantasy/vegetation/decor/forest_mushrooms.png",
+    "sizeBytes": 947,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "foliage_canopy_slice",
+    "category": "foliage",
+    "path": "public/assets/fantasy/vegetation/trees/canopy_foliage_slice.png",
+    "fullPath": "public/assets/fantasy/vegetation/trees/canopy_foliage_slice.png",
+    "sizeBytes": 29510,
+    "width": 1024,
+    "height": 1024
+  },
+  {
+    "id": "foliage_canopy_cluster",
+    "category": "foliage",
+    "path": "public/assets/fantasy/vegetation/foliage/lush_canopy_cluster.png",
+    "fullPath": "public/assets/fantasy/vegetation/foliage/lush_canopy_cluster.png",
+    "sizeBytes": 26921,
+    "width": 1024,
+    "height": 1024
+  },
+  {
+    "id": "tile_grass_meadow",
+    "category": "terrain",
+    "path": "public/assets/fantasy/terrain/tiles/grass_lush_meadow.png",
+    "fullPath": "public/assets/fantasy/terrain/tiles/grass_lush_meadow.png",
+    "sizeBytes": 187,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "tile_grass_forest",
+    "category": "terrain",
+    "path": "public/assets/fantasy/terrain/tiles/grass_deep_forest.png",
+    "fullPath": "public/assets/fantasy/terrain/tiles/grass_deep_forest.png",
+    "sizeBytes": 182,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "tile_dirt_straight",
+    "category": "terrain",
+    "path": "public/assets/fantasy/terrain/tiles/dirt_path_straight.png",
+    "fullPath": "public/assets/fantasy/terrain/tiles/dirt_path_straight.png",
+    "sizeBytes": 1002,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "tile_dirt_corner",
+    "category": "terrain",
+    "path": "public/assets/fantasy/terrain/tiles/dirt_path_corner.png",
+    "fullPath": "public/assets/fantasy/terrain/tiles/dirt_path_corner.png",
+    "sizeBytes": 1404,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "tile_dirt_cross",
+    "category": "terrain",
+    "path": "public/assets/fantasy/terrain/tiles/dirt_path_intersection.png",
+    "fullPath": "public/assets/fantasy/terrain/tiles/dirt_path_intersection.png",
+    "sizeBytes": 1229,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "tile_stone_path",
+    "category": "terrain",
+    "path": "public/assets/fantasy/terrain/tiles/cobblestone_path.png",
+    "fullPath": "public/assets/fantasy/terrain/tiles/cobblestone_path.png",
+    "sizeBytes": 1082,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "tile_water_deep",
+    "category": "terrain",
+    "path": "public/assets/fantasy/terrain/tiles/river_water_deep.png",
+    "fullPath": "public/assets/fantasy/terrain/tiles/river_water_deep.png",
+    "sizeBytes": 1349,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "tile_riverbank",
+    "category": "terrain",
+    "path": "public/assets/fantasy/terrain/tiles/riverbank_stone_transition.png",
+    "fullPath": "public/assets/fantasy/terrain/tiles/riverbank_stone_transition.png",
+    "sizeBytes": 1055,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "struct_watchtower",
+    "category": "structure",
+    "path": "public/assets/fantasy/structures/watchtower_stone.png",
+    "fullPath": "public/assets/fantasy/structures/watchtower_stone.png",
+    "sizeBytes": 838,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "struct_shrine",
+    "category": "structure",
+    "path": "public/assets/fantasy/structures/fantasy_shrine_temple.png",
+    "fullPath": "public/assets/fantasy/structures/fantasy_shrine_temple.png",
+    "sizeBytes": 991,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "struct_archery",
+    "category": "structure",
+    "path": "public/assets/fantasy/structures/archery_range.png",
+    "fullPath": "public/assets/fantasy/structures/archery_range.png",
+    "sizeBytes": 353,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "struct_castle",
+    "category": "structure",
+    "path": "public/assets/fantasy/structures/royal_keep_castle.png",
+    "fullPath": "public/assets/fantasy/structures/royal_keep_castle.png",
+    "sizeBytes": 1043,
+    "width": 128,
+    "height": 128
+  },
+  {
+    "id": "outside_atlas_png",
+    "category": "atlas",
+    "path": "public/assets/fantasy/atlases/outside_atlas.png",
+    "fullPath": "public/assets/fantasy/atlases/outside_atlas.png",
+    "sizeBytes": 48841,
+    "width": 348,
+    "height": 312
+  },
+  {
+    "id": "outside_atlas_json",
+    "category": "atlas_meta",
+    "path": "public/assets/fantasy/atlases/outside_atlas.json",
+    "fullPath": "public/assets/fantasy/atlases/outside_atlas.json",
+    "sizeBytes": 21346,
+    "width": 0,
+    "height": 0
+  },
+  {
+    "id": "terrain_atlas_png",
+    "category": "atlas",
+    "path": "public/assets/fantasy/atlases/terrain_atlas.png",
+    "fullPath": "public/assets/fantasy/atlases/terrain_atlas.png",
+    "sizeBytes": 23018,
+    "width": 252,
+    "height": 216
+  },
+  {
+    "id": "terrain_atlas_json",
+    "category": "atlas_meta",
+    "path": "public/assets/fantasy/atlases/terrain_atlas.json",
+    "fullPath": "public/assets/fantasy/atlases/terrain_atlas.json",
+    "sizeBytes": 17310,
+    "width": 0,
+    "height": 0
+  }
+]
