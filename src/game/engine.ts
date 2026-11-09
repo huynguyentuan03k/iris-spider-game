@@ -806,6 +806,9 @@ export class OpenWorldEngine {
       swordTier: cloud.swordTier || 1,
       toolTier: cloud.toolTier || 1,
       armorTier: cloud.armorTier || 0,
+      spearTier: 0,
+      shieldTier: 0,
+      upgrades: {},
     };
     this.unlockedSkills = new Set(
       (cloud.unlockedSkills || []).filter((id) => VALID_SKILL_IDS.has(id))
@@ -1027,27 +1030,6 @@ export class OpenWorldEngine {
       sound.playObeliskActivate();
       this.spawnFloatingText(this.player.x, this.player.y - 36, `Đã đánh dấu: ${label || type}`, '#38bdf8', 1.1);
     }
-  }
-
-  public fastTravelTo(x: number, y: number): void {
-    this.spawnBurst(this.player.x, this.player.y, '#38bdf8', 25, 140, true);
-    this.player.x = x;
-    this.player.y = y;
-    if (this.companion) {
-      this.companion.x = x - 30;
-      this.companion.y = y;
-      this.companion.vx = 0;
-      this.companion.vy = 0;
-    }
-    this.camX = x;
-    this.camY = y;
-    revealFogRadius(this.world.fog, x, y, 550);
-    sound.playObeliskActivate();
-    this.addShake(0.35);
-    this.spawnBurst(x, y, '#38bdf8', 35, 180, true);
-    this.setGameState(GameState.PLAYING);
-    this.saveWorld(true);
-    this.emitHudSnapshot();
   }
 
   public activateObelisk(obeliskId: number): boolean {
